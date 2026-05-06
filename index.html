@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOOL AJAIB (VOICE OVER) by @SuhendarTeknoID</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at top left, #0f172a, #020617);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .accent-gradient {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+        }
+        .btn-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #38bdf8;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        optgroup {
+            background-color: #1e293b;
+            color: #38bdf8;
+            font-weight: bold;
+            font-style: normal;
+        }
+        option {
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        select {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 #0f172a;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header dengan Judul Baru -->
+        <header class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-400 leading-tight">
+                    TOOL AJAIB (VOICE OVER) <span class="text-sm font-normal text-slate-400 block md:inline md:ml-2">by @SuhendarTeknoID</span>
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">Sintesis Suara AI Tercanggih 2026</p>
+            </div>
+            <div id="statusIndicator" class="flex items-center gap-2 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-xs text-slate-300">Sistem Online (Gemini 2.5)</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Form Input -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="glass-card rounded-3xl p-6">
+                    <label class="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Teks Voice Over</label>
+                    <textarea 
+                        id="textInput" 
+                        rows="12" 
+                        class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all resize-none"
+                        placeholder="Tulis naskah VO Anda di sini..."
+                    ></textarea>
+                    
+                    <div class="flex flex-wrap justify-between items-center mt-4 text-xs text-slate-400 px-1">
+                        <div class="flex gap-4">
+                            <span>Karakter: <span id="charCount" class="text-sky-400">0</span>/5000</span>
+                            <span>Kata: <span id="wordCount" class="text-sky-400">0</span></span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>Estimasi: <span id="estDuration" class="text-sky-400 font-bold">0s</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button id="generateBtn" class="flex-1 accent-gradient text-white font-bold py-4 rounded-2xl btn-hover flex items-center justify-center gap-3">
+                        <span id="btnIcon">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </span>
+                        <span id="btnText">Generate Audio</span>
+                    </button>
+                    <button id="clearBtn" class="bg-slate-800 text-slate-300 px-6 rounded-2xl hover:bg-slate-700 transition-colors">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Settings Sidebar -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass-card rounded-3xl p-6 space-y-5">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
+                        <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        Konfigurasi Suara
+                    </h2>
+
+                    <!-- Voice Selection -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Karakter Suara</label>
+                        <select id="voiceSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-sky-500">
+                            <!-- Voices populated by JS -->
+                        </select>
+                    </div>
+
+                    <!-- Tone/Style Selection -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Gaya Bicara (Tone)</label>
+                        <select id="toneSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-sky-500 max-h-60">
+                            <optgroup label="🎙️ 1. FORMAL & PROFESSIONAL">
+                                <option value="Reporter berita">Reporter Berita (Straight News)</option>
+                                <option value="Anchor berita">Anchor Berita (Authoritative)</option>
+                                <option value="Host berita TV">Host Berita TV</option>
+                                <option value="Reporter lapangan">Reporter Lapangan (Live Report)</option>
+                                <option value="Presenter dokumenter">Presenter Dokumenter</option>
+                                <option value="Narator sejarah">Narator Sejarah</option>
+                                <option value="Narator edukasi formal">Narator Edukasi Formal</option>
+                                <option value="Voice corporate">Voice Corporate (Company Profile)</option>
+                                <option value="MC acara resmi">MC Acara Resmi</option>
+                                <option value="Pembawa pidato">Pembawa Pidato Formal</option>
+                                <option value="E-learning">Voice E-learning</option>
+                                <option value="Audiobook serius">Narator Audiobook Serius</option>
+                            </optgroup>
+                            <optgroup label="📺 2. ENTERTAINMENT & TV SHOW">
+                                <option value="Host talk show">Host Talk Show</option>
+                                <option value="Host variety show">Host Variety Show</option>
+                                <option value="Host reality show">Host Reality Show</option>
+                                <option value="Host game show">Host Game Show (Enerjik)</option>
+                                <option value="Host infotainment">Host Infotainment</option>
+                                <option value="Presenter gosip">Presenter Gosip Selebriti</option>
+                                <option value="Host acara musik">Host Acara Musik</option>
+                                <option value="Host podcast">Host Podcast Santai</option>
+                                <option value="Announcer TV">Announcer TV</option>
+                            </optgroup>
+                            <optgroup label="⚽ 3. SPORTS & COMMENTARY">
+                                <option value="Komentator bola play-by-play">Komentator Bola (Play-by-play)</option>
+                                <option value="Komentator bola analyst">Komentator Bola (Analyst)</option>
+                                <option value="Reporter bola pinggir lapangan">Reporter Bola Pinggir Lapangan</option>
+                                <option value="Komentator esports">Komentator Esports</option>
+                                <option value="Komentator balap">Komentator Balap (F1/MotoGP Style)</option>
+                                <option value="Announcer pertandingan">Announcer Pertandingan</option>
+                                <option value="Hype caster">Hype Caster (Energi Tinggi)</option>
+                            </optgroup>
+                            <optgroup label="🎬 4. CINEMATIC & STORYTELLING">
+                                <option value="Movie trailer">Narator Film Trailer (Deep & Epic)</option>
+                                <option value="Storytelling dramatis">Storytelling Dramatis</option>
+                                <option value="Narator misteri">Narator Misteri</option>
+                                <option value="Narator horor">Narator Horor (Tegang)</option>
+                                <option value="Narator motivasi">Narator Motivasi</option>
+                                <option value="Narator puisi">Narator Puisi</option>
+                                <option value="Kisah inspiratif">Narator Kisah Inspiratif</option>
+                                <option value="Narator dongeng">Narator Dongeng</option>
+                            </optgroup>
+                            <optgroup label="📱 5. SOCIAL MEDIA / CONTENT CREATOR">
+                                <option value="TikTok storyteller">TikTok Storyteller</option>
+                                <option value="Edukasi santai">VO Edukasi Santai</option>
+                                <option value="Fun fact">VO Fun Fact</option>
+                                <option value="Listicle">VO Listicle (Top 5, dll)</option>
+                                <option value="Review produk">VO Review Produk</option>
+                                <option value="Unboxing">VO Unboxing</option>
+                                <option value="POV">VO POV</option>
+                                <option value="Relatable story">VO Relatable Story</option>
+                                <option value="Curhat">VO Curhat</option>
+                            </optgroup>
+                            <optgroup label="😂 6. COMEDY & ENTERTAINMENT">
+                                <option value="Komedi santai">Voice Komedi Santai</option>
+                                <option value="Sarkas">Voice Sarkas / Sindiran</option>
+                                <option value="Roasting">Voice Roasting</option>
+                                <option value="Lebay">Voice Exaggerated (Lebay)</option>
+                                <option value="Deadpan">Voice Deadpan (Datar Lucu)</option>
+                                <option value="Parodi">Voice Parodi</option>
+                                <option value="Meme">Voice Meme</option>
+                            </optgroup>
+                            <optgroup label="🧠 7. EDUCATIONAL & EXPLANATION">
+                                <option value="Guru">Guru Menjelaskan</option>
+                                <option value="Tutor online">Tutor Online</option>
+                                <option value="Explainer YouTube">Explainer YouTube</option>
+                                <option value="Tutorial">VO Tutorial Step-by-step</option>
+                                <option value="Fakta ilmiah">VO Fakta Ilmiah</option>
+                                <option value="Did you know">VO Did You Know?</option>
+                            </optgroup>
+                            <optgroup label="💼 8. MARKETING & SALES">
+                                <option value="Hard selling">Iklan Hard Selling</option>
+                                <option value="Soft selling">Iklan Soft Selling</option>
+                                <option value="Luxury brand">Luxury Brand Style</option>
+                                <option value="Promo diskon">Promo Diskon</option>
+                                <option value="Hype launching">Hype Launching Produk</option>
+                                <option value="Brand storytelling">Brand Storytelling</option>
+                            </optgroup>
+                            <optgroup label="🎮 9. CHARACTER & ROLEPLAY">
+                                <option value="Hero">Hero (Tegas & Berani)</option>
+                                <option value="Villain">Villain (Dingin & Intimidatif)</option>
+                                <option value="Anime style">Anime Style</option>
+                                <option value="Cartoon">Cartoon Character</option>
+                                <option value="NPC">NPC Game</option>
+                                <option value="Robot">Robot / AI Voice</option>
+                                <option value="Alien">Alien Voice</option>
+                                <option value="Anak kecil">Anak Kecil</option>
+                                <option value="Orang tua">Orang Tua</option>
+                                <option value="Mafia">Mafia / Gangster</option>
+                                <option value="Detektif noir">Detektif Noir</option>
+                            </optgroup>
+                            <optgroup label="🎧 11. MOOD / EMOTION BASED">
+                                <option value="Soothing">Tenang & Soothing</option>
+                                <option value="Energik">Semangat & Energik</option>
+                                <option value="Mellow">Sedih & Mellow</option>
+                                <option value="Marah">Marah & Intens</option>
+                                <option value="Suspense">Tegang & Suspense</option>
+                                <option value="Ceria">Bahagia & Ceria</option>
+                                <option value="Misterius">Misterius</option>
+                                <option value="Whisper">Intim (Whisper Style)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Regional Accent Selection -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Logat / Style Variation</label>
+                        <select id="accentSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-sky-500">
+                            <option value="Netral">Bahasa Indonesia Netral</option>
+                            <option value="Santai">Bahasa Indonesia Santai</option>
+                            <option value="Jaksel">Jaksel Style (English Mix)</option>
+                            <optgroup label="🌍 LOGAT DAERAH">
+                                <option value="Jawa Medok">Logat Jawa (Medok)</option>
+                                <option value="Sunda">Logat Sunda</option>
+                                <option value="Batak">Logat Batak</option>
+                                <option value="Betawi">Logat Betawi</option>
+                                <option value="Minang">Logat Minang</option>
+                                <option value="Makassar">Logat Makassar</option>
+                                <option value="Papua">Logat Papua</option>
+                                <option value="Bali">Logat Bali</option>
+                                <option value="Manado">Logat Manado</option>
+                            </optgroup>
+                            <optgroup label="🌐 INTERNATIONAL">
+                                <option value="English Neutral">English Neutral</option>
+                                <option value="British">British Accent</option>
+                                <option value="American">American Accent</option>
+                                <option value="Asian English">Singlish / Asian Accent</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Speed Control -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Kecepatan</label>
+                            <span id="speedVal" class="text-xs text-sky-400 font-mono">1.0x</span>
+                        </div>
+                        <input type="range" id="speedRange" min="0.5" max="2.0" step="0.1" value="1.0" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-400">
+                    </div>
+                </div>
+
+                <!-- Player Area -->
+                <div id="playerCard" class="hidden glass-card rounded-3xl p-6 border-sky-500/30">
+                    <h2 class="text-sm font-bold text-sky-400 mb-4 flex items-center gap-2">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                        </span>
+                        Audio Terbentuk
+                    </h2>
+                    <audio id="audioPlayer" controls class="w-full h-10 mb-4"></audio>
+                    <div class="flex justify-between items-center px-1">
+                        <a id="downloadBtn" href="#" class="text-xs text-slate-400 hover:text-white underline decoration-sky-500 underline-offset-4">Download WAV</a>
+                        <span class="text-[10px] text-slate-500 uppercase tracking-widest">Studio Quality</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-slate-600 text-xs">
+            <p>&copy; 2026 TOOL AJAIB (VOICE OVER). Powered by @SuhendarTeknoID & Gemini AI.</p>
+        </footer>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-red-500/50 rounded-3xl p-8 max-sm w-full text-center">
+            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Terjadi Kesalahan</h3>
+            <p id="errorMessage" class="text-slate-400 text-sm mb-6"></p>
+            <button onclick="document.getElementById('errorModal').classList.add('hidden')" class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-700 transition-all">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = ""; 
+        const modelName = "gemini-2.5-flash-preview-tts";
+        
+        const voices = [
+            { id: "Kore", name: "Kore (Pria - Netral)" },
+            { id: "Zephyr", name: "Zephyr (Pria - Bass)" },
+            { id: "Leda", name: "Leda (Wanita - Sopan)" },
+            { id: "Puck", name: "Puck (Ceria - Muda)" },
+            { id: "Aoede", name: "Aoede (Wanita - Lembut)" },
+            { id: "Charon", name: "Charon (Pria - Tua)" }
+        ];
+
+        const textInput = document.getElementById('textInput');
+        const charCount = document.getElementById('charCount');
+        const wordCount = document.getElementById('wordCount');
+        const estDuration = document.getElementById('estDuration');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const speedRange = document.getElementById('speedRange');
+        const speedVal = document.getElementById('speedVal');
+        const toneSelect = document.getElementById('toneSelect');
+        const accentSelect = document.getElementById('accentSelect');
+        const generateBtn = document.getElementById('generateBtn');
+        const btnIcon = document.getElementById('btnIcon');
+        const btnText = document.getElementById('btnText');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playerCard = document.getElementById('playerCard');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const errorModal = document.getElementById('errorModal');
+        const errorMessage = document.getElementById('errorMessage');
+
+        function init() {
+            voiceSelect.innerHTML = voices.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+            updateCounters();
+        }
+
+        function updateCounters() {
+            const text = textInput.value;
+            const words = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+            const speedMultiplier = parseFloat(speedRange.value);
+            const seconds = Math.ceil((words / (2.2 * speedMultiplier)));
+            charCount.textContent = text.length;
+            wordCount.textContent = words;
+            estDuration.textContent = seconds + "s";
+        }
+
+        function pcmToWav(pcmData, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcmData.length * 2);
+            const view = new DataView(buffer);
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+            };
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + pcmData.length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, pcmData.length * 2, true);
+            let offset = 44;
+            for (let i = 0; i < pcmData.length; i++, offset += 2) view.setInt16(offset, pcmData[i], true);
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        async function handleGenerate() {
+            const text = textInput.value.trim();
+            if (!text) return showError("Teks tidak boleh kosong!");
+            
+            const tone = toneSelect.options[toneSelect.selectedIndex].text;
+            const accent = accentSelect.options[accentSelect.selectedIndex].text;
+            const voice = voiceSelect.value;
+            const speed = speedRange.value;
+
+            setLoading(true);
+
+            const instruction = `Gaya Bicara: ${tone}. Logat/Dialek: ${accent}. Kecepatan: ${speed}x. 
+            Petunjuk AI: Bacakan teks bahasa Indonesia berikut. Terapkan karakteristik vokal untuk peran sebagai ${tone}. 
+            Pastikan intonasi, emosi, dan penekanan kata sesuai dengan gaya tersebut. 
+            Jika ada logat daerah (${accent}), integrasikan secara natural.
+            Teks: ${text}`;
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: instruction }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: { voiceName: voice }
+                        }
+                    },
+                    model: modelName
+                };
+
+                let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Gagal mensintesis suara. Periksa koneksi atau API Key.");
+
+                const result = await response.json();
+                const audioPart = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+                
+                if (!audioPart) throw new Error("Format audio tidak didukung.");
+
+                const pcmBase64 = audioPart.inlineData.data;
+                const sampleRate = parseInt(audioPart.inlineData.mimeType.split('rate=')[1]) || 24000;
+                
+                const binaryString = atob(pcmBase64);
+                const pcmData = new Int16Array(binaryString.length / 2);
+                for (let i = 0; i < pcmData.length; i++) {
+                    pcmData[i] = (binaryString.charCodeAt(i * 2 + 1) << 8) | binaryString.charCodeAt(i * 2);
+                }
+
+                const wavBlob = pcmToWav(pcmData, sampleRate);
+                const audioUrl = URL.createObjectURL(wavBlob);
+
+                audioPlayer.src = audioUrl;
+                downloadBtn.href = audioUrl;
+                downloadBtn.download = `IndoVoice_${tone.replace(/\s+/g, '_')}_${Date.now()}.wav`;
+                playerCard.classList.remove('hidden');
+                audioPlayer.play();
+
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function setLoading(isLoading) {
+            generateBtn.disabled = isLoading;
+            if (isLoading) {
+                btnText.textContent = "AI sedang membaca...";
+                btnIcon.innerHTML = `<div class="loader"></div>`;
+                playerCard.classList.add('hidden');
+            } else {
+                btnText.textContent = "Generate Audio";
+                btnIcon.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+            }
+        }
+
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorModal.classList.remove('hidden');
+        }
+
+        textInput.addEventListener('input', updateCounters);
+        speedRange.addEventListener('input', () => {
+            speedVal.textContent = speedRange.value + "x";
+            updateCounters();
+        });
+        generateBtn.addEventListener('click', handleGenerate);
+        clearBtn.addEventListener('click', () => {
+            textInput.value = "";
+            playerCard.classList.add('hidden');
+            updateCounters();
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
